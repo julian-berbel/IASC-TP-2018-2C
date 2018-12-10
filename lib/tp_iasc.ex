@@ -1,18 +1,8 @@
 defmodule TpIasc do
-  @moduledoc """
-  Documentation for TpIasc.
-  """
+  use Application
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> TpIasc.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def start(_type, _args) do
+    QueueSupervisor.start_link
+    Manager.start_link
   end
 end
