@@ -1,8 +1,8 @@
 defmodule Manager do
   use GenServer
 
-  def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, [name: __MODULE__])
+  def start_link(opts \\ [name: __MODULE__]) do
+    GenServer.start_link(__MODULE__, :ok, opts)
   end
 
   def start(opts \\ []) do
@@ -18,7 +18,7 @@ defmodule Manager do
   end
 
   def subscribe_to(queue_name, subscriber) do
-    GenServer.cast __MODULE__, { :subscribe_to, queue_name }
+    GenServer.cast __MODULE__, { :subscribe_to, queue_name, subscriber }
   end
 
   def queues do
@@ -30,7 +30,8 @@ defmodule Manager do
   end
 
   def handle_cast({ :new, queue_name }, state) do
-    state = Map.put state, queue_name, QueueSupervisor.new_queue(queue_name)
+    { _, queue } = QueueSupervisor.new_queue(queue_name)
+    state = Map.put state, queue_name, queue
 
     { :noreply, state }
   end
@@ -44,7 +45,7 @@ defmodule Manager do
 
   def handle_cast({ :subscribe_to, queue_name, subscriber }, state) do
     queue = state[queue_name]
-    Queue.subscribe(queue, subscriber)
+    Queue.add_consumer(queue, subscriber)
 
     { :noreply, state }
   end

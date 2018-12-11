@@ -13,20 +13,44 @@ defmodule Queue do
     GenServer.cast queue, { :push, message }
   end
 
-  def pop(queue) do
-    GenServer.call queue, :pop
+  def add_consumer(queue, consumer) do
+    GenServer.cast queue, { :add_consumer, consumer }
+  end
+
+  def deliver(queue) do
+    GenServer.cast queue, :deliver
   end
 
   def init(:ok) do
-    { :ok, :queue.new }
+    { :ok, %{ consumers: [], queue: :queue.new } }
+  end
+
+  defp pop(state) do
+    { { :value, value }, newqueue } = :queue.out(state[:queue])
+    newstate = %{ state | queue: newqueue }
+    { value, newstate }
   end
 
   def handle_cast({ :push, message }, state) do
-    { :noreply, :queue.in(message, state) }
+    newstate = %{ state | queue: :queue.in(message, state[:queue]) }
+    { :noreply, newstate }
+  end
+  
+  def handle_call(:pop, _from, state) do
+    { message, _ } = pop(state)
+
+    { :reply, message, state }
   end
 
-  def handle_call(:pop , _from, state) do
-    { { :value, value }, newstate } = :queue.out(state)
-    { :reply, value, newstate }
+  def handle_cast({ :add_consumer, consumer }, state) do
+    newstate = %{ state | consumers: [consumer | state[:consumers]] }
+    { :noreply, newstate }
+  end
+
+  def handle_cast(:deliver, state) do
+    { message, newstate } = pop(state)
+    Enum.each(state[:consumers], &(Consumer.consume(&1, message)))
+
+    { :noreply, newstate }
   end
 end
