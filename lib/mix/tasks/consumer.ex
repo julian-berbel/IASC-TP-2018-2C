@@ -3,7 +3,7 @@ defmodule Mix.Tasks.Consumer do
 
   def run([main_node, queue]) do
     {:ok, consumer} = Consumer.start_link()
-    IO.puts :rpc.call(String.to_atom(main_node), Manager, :subscribe_to, [String.to_atom(queue), consumer])
+    :rpc.call(String.to_atom(main_node), Manager, :subscribe_to, [String.to_atom(queue), consumer])
 
     wait()
   end
