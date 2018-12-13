@@ -1,4 +1,4 @@
-defmodule Queue do
+defmodule PublishSubscribe do
   use GenServer
 
   def start_link(opts \\ []) do
@@ -31,15 +31,15 @@ defmodule Queue do
     { value, newstate }
   end
 
+  def handle_call(:pop, _from, state) do
+    { message, _ } = pop(state)
+    
+    { :reply, message, state }
+  end
+
   def handle_cast({ :push, message }, state) do
     newstate = %{ state | queue: :queue.in(message, state[:queue]) }
     { :noreply, newstate }
-  end
-  
-  def handle_call(:pop, _from, state) do
-    { message, _ } = pop(state)
-
-    { :reply, message, state }
   end
 
   def handle_cast({ :add_consumer, consumer }, state) do

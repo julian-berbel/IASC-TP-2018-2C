@@ -9,8 +9,8 @@ defmodule Manager do
     GenServer.start(__MODULE__, :ok, opts)
   end
 
-  def new(queue_name) do
-    GenServer.cast __MODULE__, { :new, queue_name }
+  def new(queue_name, mode \\ :publish_subscribe) do
+    GenServer.cast __MODULE__, { :new, mode, queue_name }
   end
 
   def post_to(queue_name, message) do
@@ -29,8 +29,8 @@ defmodule Manager do
     { :ok, %{} }
   end
 
-  def handle_cast({ :new, queue_name }, state) do
-    { _, queue } = QueueSupervisor.new_queue(queue_name)
+  def handle_cast({ :new, mode, queue_name }, state) do
+    { _, queue } = QueueSupervisor.new_queue(mode)
     state = Map.put state, queue_name, queue
 
     { :noreply, state }
