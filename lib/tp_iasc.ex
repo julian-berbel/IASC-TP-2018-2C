@@ -2,7 +2,7 @@ defmodule TpIasc do
   use Application
 
   def start(_type, _args) do
-    QueueSupervisor.start_link
+    Queue.Supervisor.start_link
     Manager.start_link
   end
 end

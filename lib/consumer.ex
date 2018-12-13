@@ -22,7 +22,7 @@ defmodule Consumer do
   end
 
   def handle_cast({:subscribe_to, queue}, _) do
-    Queue.add_consumer queue, self()
+    Queue.Worker.add_consumer queue, self()
     { :noreply, {} }
   end
 

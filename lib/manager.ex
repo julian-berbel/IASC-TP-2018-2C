@@ -30,7 +30,7 @@ defmodule Manager do
   end
 
   def handle_cast({ :new, mode, queue_name }, state) do
-    { _, queue } = QueueSupervisor.new_queue(mode)
+    { _, queue } = Queue.Supervisor.new_queue(mode)
     state = Map.put state, queue_name, queue
 
     { :noreply, state }
@@ -38,14 +38,14 @@ defmodule Manager do
 
   def handle_cast({ :post_to, queue_name, message }, state) do
     queue = state[queue_name]
-    Queue.push(queue, message)
+    Queue.Worker.push(queue, message)
 
     { :noreply, state }
   end
 
   def handle_cast({ :subscribe_to, queue_name, subscriber }, state) do
     queue = state[queue_name]
-    Queue.add_consumer(queue, subscriber)
+    Queue.Worker.add_consumer(queue, subscriber)
 
     { :noreply, state }
   end

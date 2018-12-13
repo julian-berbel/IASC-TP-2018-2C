@@ -1,4 +1,4 @@
-defmodule QueueSupervisor do
+defmodule Queue.Supervisor do
   use DynamicSupervisor
 
   def start_link do
@@ -10,15 +10,15 @@ defmodule QueueSupervisor do
   end
 
   def new_queue(mode) do
-    spec = mode(mode).child_spec([])
+    spec = Queue.Worker.child_spec([mode(mode)])
     DynamicSupervisor.start_child(__MODULE__, spec)
   end
 
   def mode(:publish_subscribe) do
-    PublishSubscribe
+    Queue.Mode.PublishSubscribe
   end
 
   def mode(:work_queue) do
-    WorkQueue
+    Queue.Mode.WorkQueue
   end
 end
