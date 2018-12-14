@@ -1,12 +1,8 @@
 defmodule Consumer do
   use GenServer
 
-  def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, :ok, opts)
-  end
-
-  def start(opts \\ []) do
-    GenServer.start(__MODULE__, :ok, opts)
+  def start_link(timeout) do
+    GenServer.start_link(__MODULE__, timeout, [])
   end
   
   def subscribe_to(consumer, queue) do
@@ -17,8 +13,8 @@ defmodule Consumer do
     GenServer.cast consumer, { :consume, message }
   end
 
-  def init(:ok) do
-    { :ok, {} }
+  def init(timeout) do
+    { :ok, timeout }
   end
 
   def handle_cast({:subscribe_to, queue}, _) do
@@ -26,8 +22,10 @@ defmodule Consumer do
     { :noreply, {} }
   end
 
-  def handle_cast({ :consume, message }, _) do
+  def handle_cast({ :consume, message }, timeout) do
+    Process.sleep(timeout)
     IO.puts message
-    { :noreply, {} }
+
+    { :noreply, timeout }
   end
 end

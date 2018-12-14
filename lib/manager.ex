@@ -40,6 +40,8 @@ defmodule Manager do
     queue = state[queue_name]
     Queue.Worker.push(queue, message)
 
+    Queue.Worker.deliver queue
+
     { :noreply, state }
   end
 

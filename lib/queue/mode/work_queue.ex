@@ -12,7 +12,7 @@ defmodule Queue.Mode.WorkQueue do
   def handle_cast({ :deliver, message, consumers }, next) do
     Consumer.consume(Enum.at(consumers, next), message)
 
-    next = rem((next + 1), Kernel.length(consumers))
+    next = rem(next + 1, Kernel.length(consumers))
     { :noreply, next }
   end
 end

@@ -1,5 +1,8 @@
 # TpIasc
 
+## Enunciado
+https://docs.google.com/document/d/18UB4slfDrlvhyx57nHtLp1LkfNOenajvnI_Jm06BaCE/edit#
+
 **TODO: Add description**
 
 ## Installation
