@@ -1,8 +1,8 @@
 defmodule Queue.Worker do
   use GenServer
 
-  def start_link([mode]) do
-    GenServer.start_link(__MODULE__, mode, [])
+  def start_link([name, mode]) do
+    GenServer.start_link(__MODULE__, mode, [name: name])
   end
 
   def push(queue, message) do

@@ -10,7 +10,7 @@ defmodule Manager do
   end
 
   def new(queue_name, mode \\ :publish_subscribe) do
-    GenServer.cast __MODULE__, { :new, mode, queue_name }
+    GenServer.cast __MODULE__, { :new, queue_name, mode }
   end
 
   def post_to(queue_name, message) do
@@ -21,38 +21,25 @@ defmodule Manager do
     GenServer.cast __MODULE__, { :subscribe_to, queue_name, subscriber }
   end
 
-  def queues do
-    GenServer.call __MODULE__, :queues
-  end
-
   def init(:ok) do
-    { :ok, %{} }
+    { :ok, [] }
   end
 
-  def handle_cast({ :new, mode, queue_name }, state) do
-    { _, queue } = Queue.Supervisor.new_queue(mode)
-    state = Map.put state, queue_name, queue
+  def handle_cast({ :new, queue_name, mode }, state) do
+    Queue.Supervisor.new_queue(queue_name, mode)
 
     { :noreply, state }
   end
 
   def handle_cast({ :post_to, queue_name, message }, state) do
-    queue = state[queue_name]
-    Queue.Worker.push(queue, message)
-
-    Queue.Worker.deliver queue
+    Queue.Worker.push(queue_name, message)
 
     { :noreply, state }
   end
 
   def handle_cast({ :subscribe_to, queue_name, subscriber }, state) do
-    queue = state[queue_name]
-    Queue.Worker.add_consumer(queue, subscriber)
+    Queue.Worker.add_consumer(queue_name, subscriber)
 
     { :noreply, state }
-  end
-
-  def handle_call(:queues, _from, state) do
-    { :reply, state, state }
   end
 end

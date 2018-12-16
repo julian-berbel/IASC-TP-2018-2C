@@ -9,8 +9,8 @@ defmodule Queue.Supervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def new_queue(mode) do
-    spec = Queue.Worker.child_spec([mode(mode)])
+  def new_queue(name, mode) do
+    spec = Queue.Worker.child_spec([name, mode(mode)])
     DynamicSupervisor.start_child(__MODULE__, spec)
   end
 
