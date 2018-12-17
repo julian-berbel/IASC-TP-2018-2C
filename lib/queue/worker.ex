@@ -1,8 +1,9 @@
 defmodule Queue.Worker do
   use GenServer
+  alias DB.MessageDB.Message
 
   def start_link([name, mode]) do
-    GenServer.start_link(__MODULE__, mode, [name: name])
+    GenServer.start_link(__MODULE__, [name, mode], [name: name])
   end
 
   def push(queue, message) do
@@ -18,32 +19,28 @@ defmodule Queue.Worker do
     GenServer.cast queue, :deliver
   end
 
-  def init(mode) do
+  def init([name, mode]) do
     { :ok, mode } = mode.start_link([])
-    { :ok, %{ consumers: [], queue: :queue.new, mode: mode } }
+
+    { :ok, %{ consumers: [], name: name, mode: mode } }
   end
 
-  def pop(queue) do
-    { { :value, message }, newqueue } = :queue.out(queue)
+  def handle_cast({ :push, message }, %{ name: queue_name } = state) do
+    Message.push(queue_name, message)
 
-    { message, newqueue }
-  end
-
-  def handle_cast({ :push, message }, %{ queue: queue } = state) do
-    newstate = %{ state | queue: :queue.in(message, queue) }
-    { :noreply, newstate }
+    { :noreply, state }
   end
 
   def handle_cast({ :add_consumer, consumer }, %{ consumers: consumers } = state) do
     newstate = %{ state | consumers: [consumer | consumers] }
+
     { :noreply, newstate }
   end
 
-  def handle_cast(:deliver, %{ consumers: consumers, queue: queue, mode: mode } = state) do
-    { message, new_queue } = pop(queue)
-    newstate = %{ state | queue: new_queue }
-
-    GenServer.cast mode, {:deliver, message, consumers}
-    { :noreply, newstate }
+  def handle_cast(:deliver, %{ consumers: consumers, name: queue_name, mode: mode } = state) do
+    { :ok, message } = Message.pop(queue_name)
+    
+    GenServer.cast mode, {:deliver, message.content, consumers}
+    { :noreply, state }
   end
 end
