@@ -1,5 +1,6 @@
 defmodule Queue.Mode.WorkQueue do
   use GenServer
+  use DB.MessageDB
 
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, :ok, opts)
