@@ -1,2 +1,2 @@
 #!/bin/bash
-iex --sname main -S mix
+iex --name "main@$USER" -S mix
