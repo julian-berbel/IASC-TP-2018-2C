@@ -7,6 +7,7 @@ defmodule Queue.Worker do
 
   def push(queue, message) do
     GenServer.cast queue, { :push, message }
+    GenServer.cast queue, :deliver
   end
 
   def add_consumer(queue, consumer) do
@@ -22,7 +23,7 @@ defmodule Queue.Worker do
     { :ok, %{ consumers: [], queue: :queue.new, mode: mode } }
   end
 
-  defp pop(queue) do
+  def pop(queue) do
     { { :value, message }, newqueue } = :queue.out(queue)
 
     { message, newqueue }
@@ -41,7 +42,7 @@ defmodule Queue.Worker do
   def handle_cast(:deliver, %{ consumers: consumers, queue: queue, mode: mode } = state) do
     { message, new_queue } = pop(queue)
     newstate = %{ state | queue: new_queue }
-    
+
     GenServer.cast mode, {:deliver, message, consumers}
     { :noreply, newstate }
   end
