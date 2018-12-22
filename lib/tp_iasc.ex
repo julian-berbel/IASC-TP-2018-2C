@@ -11,6 +11,6 @@ defmodule TpIasc do
     DB.MessageDB.wait()
 
     Queue.Supervisor.start_link
-    Manager.start_link
+    Manager.Supervisor.start_link
   end
 end

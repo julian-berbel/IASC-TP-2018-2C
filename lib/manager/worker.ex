@@ -1,7 +1,7 @@
-defmodule Manager do
+defmodule Manager.Worker do
   use GenServer
 
-  def start_link(opts \\ [name: __MODULE__]) do
+  def start_link(opts) do
     GenServer.start_link(__MODULE__, :ok, opts)
   end
 
@@ -9,7 +9,7 @@ defmodule Manager do
     GenServer.start(__MODULE__, :ok, opts)
   end
 
-  def new(queue_name, mode \\ :publish_subscribe) do
+  def new(queue_name, mode) do
     GenServer.cast __MODULE__, { :new, queue_name, mode }
   end
 
