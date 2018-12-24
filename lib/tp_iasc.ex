@@ -14,6 +14,6 @@ defmodule TpIasc do
     # as it is a dynamic supervisor. I think we should change this yo be static
     # Queue.Supervisor.start_link
     Queue.Worker.start_link([:cola1, Queue.Mode.PublishSubscribe])
-    Manager.Supervisor.start_link
+    # P.D.: we should parameterize the mode
   end
 end
