@@ -1,9 +1,13 @@
 defmodule Manager do
-  alias Manager.Worker
+  def new(queue_name, mode) do
+    Queue.Supervisor.new_queue(queue_name, mode)
+  end
 
-  defdelegate new(name, mode \\ :publish_subscribe), to: Worker
+  def post_to(queue_name, message) do
+    Queue.Worker.push(queue_name, message)
+  end
 
-  defdelegate post_to(queue_name, message), to: Worker
-
-  defdelegate subscribe_to(queue_name, subscriber), to: Worker
+  def subscribe_to(queue_name, subscriber) do
+    Queue.Worker.add_consumer(queue_name, subscriber)
+  end
 end
