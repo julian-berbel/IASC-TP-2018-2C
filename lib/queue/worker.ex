@@ -3,16 +3,16 @@ defmodule Queue.Worker do
   alias DB.MessageDB.Message
 
   def start_link([name, mode]) do
-    GenServer.start_link(__MODULE__, [name, mode], [name: __MODULE__])
+    GenServer.start_link(__MODULE__, [name, mode], [name: name])
   end
 
   def push(queue, message) do
-    Message.push(queue, message)
-    GenServer.cast Queue.Worker, :deliver
+    GenServer.cast queue, { :push, message }
+    GenServer.cast queue, :deliver
   end
 
   def add_consumer(queue, consumer) do
-    GenServer.cast __MODULE__, { :add_consumer, consumer }
+    GenServer.cast queue, { :add_consumer, consumer }
   end
 
   def deliver(queue) do
@@ -23,6 +23,12 @@ defmodule Queue.Worker do
     { :ok, mode } = mode.start_link([])
 
     { :ok, %{ consumers: [], name: name, mode: mode } }
+  end
+
+  def handle_cast({ :push, message }, %{ name: queue_name } = state) do
+    Message.push(queue_name, message)
+
+    { :noreply, state }
   end
 
   def handle_cast({ :add_consumer, consumer }, %{ consumers: consumers } = state) do
