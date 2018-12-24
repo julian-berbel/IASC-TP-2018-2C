@@ -10,7 +10,10 @@ defmodule TpIasc do
     DB.MessageDB.create(memory: [node()])
     DB.MessageDB.wait()
 
-    Queue.Supervisor.start_link
+    # I comment this because the supervisor was never instantiating the actor
+    # as it is a dynamic supervisor. I think we should change this yo be static
+    # Queue.Supervisor.start_link
+    Queue.Worker.start_link([:cola1, Queue.Mode.PublishSubscribe])
     Manager.Supervisor.start_link
   end
 end
