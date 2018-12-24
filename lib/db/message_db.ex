@@ -15,7 +15,7 @@ defdatabase DB.MessageDB do
 
         {:ok, new}
       end
-      |> Amnesia.transaction!
+      |> Amnesia.Fragment.transaction!
     end
 
     def pop(queue_name) do
@@ -29,12 +29,12 @@ defdatabase DB.MessageDB do
             {:ok, first}
         end
       end
-      |> Amnesia.transaction!
+      |> Amnesia.Fragment.transaction!
     end
 
     def all do
       fn -> fetch_all() end
-      |> Amnesia.transaction!
+      |> Amnesia.Fragment.transaction!
     end
 
     ## Auxiliary Functions

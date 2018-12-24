@@ -5,6 +5,7 @@ defmodule TpIasc do
   def start(_type, _args) do
     
     Amnesia.Schema.create([node()])
+    Amnesia.Fragment.activate(Message, [node()])
     Amnesia.start()
     
     DB.MessageDB.create(memory: [node()])
