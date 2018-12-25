@@ -13,4 +13,5 @@ if [ $# -ne 4 ]; then
   echo ""
   exit 1
 fi
+
 elixir --sname $1 -S mix producer "main@$USER" $2 "$3" $4
