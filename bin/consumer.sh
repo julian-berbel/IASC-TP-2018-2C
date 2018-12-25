@@ -12,4 +12,4 @@ if [ $# -ne 3 ]; then
   echo ""
   exit 1
 fi
-elixir --sname $1 -S mix consumer "main@$USER" $2 $3
+elixir --name "$1@127.0.0.1" -S mix consumer "n1@127.0.0.1" $2 $3
