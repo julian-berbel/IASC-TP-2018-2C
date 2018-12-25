@@ -12,5 +12,12 @@ defmodule TpIasc do
     DB.MessageDB.wait()
 
     Queue.Supervisor.start_link
+
+    children = [
+      TpIasc.Server
+    ]
+
+    opts = [strategy: :one_for_one, name: TpIasc.Supervisor]
+    Supervisor.start_link(children, opts)
   end
 end

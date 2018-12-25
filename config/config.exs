@@ -28,3 +28,13 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env()}.exs"
+
+config :tp_iasc, TpIasc.Server,
+  adapter: Plug.Cowboy,
+  plug: TpIasc.API,
+  scheme: :http,
+  port: 8880
+
+config :tp_iasc,
+  maru_servers: [TpIasc.Server]
+
