@@ -10,4 +10,6 @@ defmodule Manager do
   def subscribe_to(queue_name, subscriber) do
     Queue.Worker.add_consumer(queue_name, subscriber)
   end
+
+  defdelegate queues, to: Queue.Supervisor, as: :children_names
 end

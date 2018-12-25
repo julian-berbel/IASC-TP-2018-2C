@@ -21,4 +21,9 @@ defmodule Queue.Supervisor do
   def mode(:work_queue) do
     Queue.Mode.WorkQueue
   end
+
+  def children_names do
+    children = Supervisor.which_children(__MODULE__)
+    Enum.map children, fn {_, pid, _, _} -> Keyword.get Process.info(pid), :registered_name end
+  end
 end
