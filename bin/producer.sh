@@ -13,4 +13,5 @@ if [ $# -ne 4 ]; then
   echo ""
   exit 1
 fi
+
 elixir --name "$1@127.0.0.1" -S mix producer "n1@127.0.0.1" $2 "$3" $4

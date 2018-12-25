@@ -37,6 +37,16 @@ defdatabase DB.MessageDB do
       |> Amnesia.Fragment.transaction!
     end
 
+    def clear(queue) do
+      fn ->
+        queue = fetch_queue(queue)
+
+        #There's probably a smarter way to go about this
+        Enum.each queue, &(delete pack(&1))
+      end
+      |> Amnesia.Fragment.transaction!
+    end
+
     ## Auxiliary Functions
 
     defp fetch_all do
@@ -44,6 +54,10 @@ defdatabase DB.MessageDB do
       |> Enum.map(&pack/1)
     end
 
+    defp fetch_queue(queue_name) do
+      Mnesia.select(Message, [{match(), [guard_queue_name(queue_name)], result()}])
+    end
+        
     defp fetch_first(queue_name) do
       case Mnesia.select(Message, [{match(), [guard_queue_name(queue_name)], result()}]) do
         []     -> nil

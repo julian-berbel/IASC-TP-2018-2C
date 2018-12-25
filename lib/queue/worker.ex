@@ -19,6 +19,14 @@ defmodule Queue.Worker do
     GenServer.cast queue, :deliver
   end
 
+  def stats(queue) do
+    GenServer.call queue, :stats
+  end
+
+  def terminate(queue) do
+    GenServer.cast queue, :terminate
+  end
+
   def init([name, mode]) do
     { :ok, mode } = mode.start_link([])
 
@@ -42,5 +50,16 @@ defmodule Queue.Worker do
 
     GenServer.cast mode, {:deliver, message.content, consumers}
     { :noreply, state }
+  end
+  
+  def handle_cast(:terminate, %{ name: queue_name } = state) do
+    Message.clear(queue_name)
+    
+    Supervisor.terminate_child(Queue.Supervisor, self()) # for some reason without this line supervisor restarts the server, even though it should terminate normally
+    {:stop, :normal, state}
+  end
+
+  def handle_call(:stats, %{ consumers: consumers, name: queue_name, mode: mode } = state) do
+    #TODO
   end
 end
