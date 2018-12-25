@@ -13,7 +13,7 @@ defmodule Manager do
 
   defdelegate queues, to: Queue.Supervisor, as: :children_names
   
-  defdelegate stats(name), to: Queue.Worker, as: :children_names
+  defdelegate stats(name), to: Queue.Worker, as: :stats
 
   defdelegate delete_queue(name), to: Queue.Worker, as: :terminate
 end
