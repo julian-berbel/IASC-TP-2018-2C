@@ -11,16 +11,31 @@ defmodule Router.Queue do
       json(conn, Manager.queues)
     end
     
-    route_param :name, type: Atom do
+    route_param :name, type: String do
       get do
-        json(conn, Queue.Worker.stats(params[:name]))
+        name = String.to_atom(params[:name])
+
+        json(conn, Manager.stats(name))
       end
 
-      post do
-        Manager.new params[:name], params[:type]
+      delete do
+        name = String.to_atom(params[:name])
+        Manager.delete_queue(name)
 
-        json(conn, "Queue #{params[:name]} successfully created.")
+        json(conn, "Queue #{name} successfully deleted.")
       end
+    end
+
+    params do
+      requires :name, type: String
+      requires :type, type: Atom, values: [:publish_subscribe, :work_queue]
+    end
+
+    post do
+      name = String.to_atom(params[:name])
+      Manager.new name, params[:type]
+
+      json(conn, "Queue #{name} successfully created.")
     end
   end
 end
@@ -47,9 +62,33 @@ defmodule TpIasc.API do
 
   mount Router.Homepage
 
+  rescue_from NotFound, as: e do
+    IO.inspect(e)
+
+    conn
+    |> put_status(404)
+    |> text("Not Found")
+  end
+
+  rescue_from Unauthorized, as: e do
+    IO.inspect(e)
+
+    conn
+    |> put_status(401)
+    |> text("Unauthorized")
+  end
+
+  rescue_from [MatchError, RuntimeError], with: :custom_error
+
   rescue_from :all, as: e do
     conn
     |> put_status(Plug.Exception.status(e))
     |> text("Server Error")
+  end
+
+  defp custom_error(conn, exception) do
+    conn
+    |> put_status(500)
+    |> text(exception.message)
   end
 end

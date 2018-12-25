@@ -12,4 +12,8 @@ defmodule Manager do
   end
 
   defdelegate queues, to: Queue.Supervisor, as: :children_names
+  
+  defdelegate stats(name), to: Queue.Worker, as: :children_names
+
+  defdelegate delete_queue(name), to: Queue.Worker, as: :terminate
 end
