@@ -1,2 +1,2 @@
-#!/bin/bash
-iex --name "$1@127.0.0.1" --erl "-config sys.config" -S mix
+#!/bin/sh
+iex --name "$1@127.0.0.1" --cookie aReallyStrongCookie -S mix

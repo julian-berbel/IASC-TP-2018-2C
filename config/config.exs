@@ -33,6 +33,7 @@ config :tp_iasc, TpIasc.Server,
   adapter: Plug.Cowboy,
   plug: TpIasc.API,
   scheme: :http,
+  ip: {0, 0, 0, 0},
   port: 8880
 
 config :tp_iasc,
