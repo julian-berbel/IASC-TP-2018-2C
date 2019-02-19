@@ -17,8 +17,9 @@ RUN mix deps.compile
 
 COPY config/ /var/www/tp-iasc/config/
 COPY lib /var/www/tp-iasc/lib/
+RUN mix compile
 
-## Copy database and shell scripts
+## Copy shell scripts
 
 COPY bin/ /var/www/tp-iasc/bin/
 
