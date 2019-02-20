@@ -59,7 +59,7 @@ defmodule Queue.Worker do
     {:stop, :normal, state}
   end
 
-  def handle_call(:stats, %{ consumers: consumers, name: queue_name, mode: mode } = state) do
-    #TODO
-  end
+#  def handle_call(:stats, %{ consumers: consumers, name: queue_name, mode: mode } = state) do
+#    #TODO
+#  end
 end

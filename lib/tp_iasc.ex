@@ -1,18 +1,29 @@
 defmodule TpIasc do
   use Application
   use DB.MessageDB
-  alias :mnesia, as: Mnesia
 
   def start(_type, _args) do
-    Node.connect :"main@127.0.0.1"
-
+    connect_to_cluster()
+    
     case Node.list() do 
-      []           -> master_start()
-      [master | _] -> slave_start(master)
+      []           -> init_cluster()
+      [master | _] -> join_cluster(master)
     end
+
+    Queue.Supervisor.start_link
+
+    Supervisor.start_link([TpIasc.Server], [strategy: :one_for_one, name: TpIasc.Supervisor])
   end
 
-  def master_start do
+  def connect_to_cluster do
+    { :ok, file } = File.open("cluster_nodes", [:read, :write])
+
+    IO.binread(file, :all)
+    |> String.split("\n")
+    |> Enum.each(fn node -> Node.connect(String.to_atom(node)) end)
+  end
+
+  def init_cluster do
     nodes = [ node() ]
     Amnesia.Schema.create(nodes)
     Amnesia.Fragment.activate(Message, nodes)
@@ -22,20 +33,9 @@ defmodule TpIasc do
     DB.MessageDB.wait()
 
     SyncM.start
-
-    Queue.Supervisor.start_link
-
-    children = [
-      TpIasc.Server
-    ]
-
-    opts = [strategy: :one_for_one, name: TpIasc.Supervisor]
-    Supervisor.start_link(children, opts)
   end
 
-  def slave_start(master) do
+  def join_cluster(master) do
     GenServer.multi_call([master], :sync_m, {:request_join, node(), :ram_copies})
-    
-    Supervisor.start_link([], [strategy: :one_for_one, name: TpIasc.Supervisor])
   end
 end
