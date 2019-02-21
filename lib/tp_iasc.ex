@@ -4,11 +4,14 @@ defmodule TpIasc do
 
   def start(_type, _args) do
     connect_to_cluster()
-    
-    case Node.list() do 
-      []           -> init_cluster()
-      [master | _] -> join_cluster(master)
-    end
+
+    spawn(fn -> 
+      Process.sleep(1000) # If you connect to a node and immediately ask for the node list, you only get that one node back as a result
+      case Node.list() do # even if there are more connected to it. Giving it a small delay allows it to connect to the rest of them.
+        []           -> init_cluster()
+        members      -> join_cluster(members)
+      end
+    end)
 
     Queue.Supervisor.start_link
 
@@ -35,7 +38,23 @@ defmodule TpIasc do
     SyncM.start
   end
 
-  def join_cluster(master) do
-    GenServer.multi_call([master], :sync_m, {:request_join, node(), :ram_copies})
+  def join_cluster(members) do
+    Enum.each(members, fn member -> 
+      :rpc.call(member, TpIasc, :add_cluster_member, [node()])
+    end)
+    update_cluster_list()
+  end
+
+  def add_cluster_member(joinee) do
+    GenServer.call :sync_m, {:request_join, joinee, :ram_copies}
+    update_cluster_list()
+  end
+
+  def update_cluster_list do
+    spawn(fn -> 
+      Process.sleep(1000)
+      { :ok, file } = File.open("cluster_nodes", [:write])
+      IO.binwrite(file, Enum.join(Node.list(), "\n"))
+    end)
   end
 end
