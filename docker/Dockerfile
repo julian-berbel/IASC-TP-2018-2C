@@ -23,4 +23,4 @@ RUN mix compile
 
 COPY bin/ /var/www/tp-iasc/bin/
 
-ENTRYPOINT ["/var/www/tp-iasc/bin/main.sh", "main"]
+ENTRYPOINT ["/var/www/tp-iasc/bin/main.sh"]
