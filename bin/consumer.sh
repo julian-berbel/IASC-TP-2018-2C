@@ -18,4 +18,4 @@ fi
 
 IP=$(get_main_ip)
 
-elixir --name "$1@$IP" --cookie aReallyDeliciousCookie -S mix consumer $2 $3 $4
+elixir --name "$1@$IP" --cookie aReallyDeliciousCookie --no-halt -S mix consumer $2 $3 $4
