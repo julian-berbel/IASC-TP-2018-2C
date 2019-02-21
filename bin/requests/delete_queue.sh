@@ -12,3 +12,4 @@ if [ $# -ne 2 ]; then
 fi
 
 curl -X DELETE "$1:8880/queue/$2"
+echo ""

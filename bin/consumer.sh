@@ -5,11 +5,11 @@
 if [ $# -ne 4 ]; then
   echo "Usage:"
   echo ""
-  echo "      ./bin/consumer.sh NODE_NAME QUEUE_NODE QUEUE_NAME WAIT: "
+  echo "      ./bin/consumer.sh NODE_NAME HOST QUEUE_NAME WAIT: "
   echo ""
   echo "         NODE_NAME: For some reason for two nodes to link with each other, the two of them need to have a name."
   echo "                    It's not really used for anything so just put whatever here as long as it's not repeated with another node."
-  echo "         QUEUE_NODE: The node of the queue the consumer will subscribe to."
+  echo "         HOST:      The IP of the host."
   echo "         QUEUE_NAME: The name of the queue which you wish to subscribe to."
   echo "         WAIT: The time in ms the consumer takes to consume the message."
   echo ""
@@ -18,4 +18,4 @@ fi
 
 IP=$(get_main_ip)
 
-elixir --name "$1@$IP" --cookie aReallyDeliciousCookie --no-halt -S mix consumer $2 $3 $4
+elixir --name "$1@$IP" --cookie aReallyDeliciousCookie --no-halt -S mix consumer "main@$2" $3 $4

@@ -11,3 +11,4 @@ if [ $# -ne 1 ]; then
 fi
 
 curl $1:8880/queue
+echo ""

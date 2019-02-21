@@ -14,3 +14,4 @@ if [ $# -ne 3 ]; then
 fi
 
 curl -X POST -d "name=$2&type=$3" "$1:8880/queue"
+echo ""
