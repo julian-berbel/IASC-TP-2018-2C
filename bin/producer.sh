@@ -2,13 +2,11 @@
 
 . ./bin/lib.sh
 
-if [ $# -ne 5 ]; then
+if [ $# -ne 4 ]; then
   echo "Usage:"
   echo ""
-  echo "      ./bin/producer.sh NODE_NAME HOST QUEUE_NAME MESSAGE WAIT: "
+  echo "      ./bin/producer.sh HOST QUEUE_NAME MESSAGE WAIT: "
   echo ""
-  echo "         NODE_NAME: For some reason for two nodes to link with each other, the two of them need to have a name."
-  echo "                    It's not really used for anything so just put whatever here as long as it's not repeated with another node."
   echo "         HOST:      The IP of the host."
   echo "         QUEUE_NAME: The name of the queue which you wish to subscribe to."
   echo "         MESSAGE: The message you wish to send to the queue."
@@ -18,5 +16,6 @@ if [ $# -ne 5 ]; then
 fi
 
 IP=$(get_main_ip)
+NAME=$(random_name)
 
-elixir --name "$1@$IP" --cookie aReallyDeliciousCookie -S mix producer "main@$2" $3 "$4" $5
+elixir --name "$NAME@$IP" --cookie aReallyDeliciousCookie -S mix producer "main@$1" $2 "$3" $4
