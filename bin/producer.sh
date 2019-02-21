@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. ./lib.sh
+. ./bin/lib.sh
 
 if [ $# -ne 4 ]; then
   echo "Usage:"
